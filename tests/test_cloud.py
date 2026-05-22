@@ -6127,14 +6127,17 @@ class TestCloudWalDownloader:
             "00000001000000030000001A", no_partial=False, parallel=1
         )
 
-        # THEN the actual WAL is returned, not skipped because of the label
+        # THEN the actual WAL is returned
         assert result == [source_dir + "00000001000000030000001A.gz"]
 
     @mock.patch(
         "barman.cloud.CloudWalDownloader._validate_wal_path",
-        new=lambda self, x, no_partial: False,  # always returns false
+        side_effect=[False, True, True],
     )
-    def test_get_wals_to_download_exits_early_when_requested_wal_is_invalid(self):
+    def test_get_wals_to_download_returns_empty_list_when_requested_wal_is_invalid(
+        self,
+        mock_validate_wal_path,
+    ):
         """
         Test that _get_wals_to_download returns an empty list when the requested
         WAL is invalid (a backup file in this test).
