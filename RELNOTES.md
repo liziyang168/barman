@@ -2,6 +2,30 @@
 
 © Copyright EnterpriseDB UK Limited 2025 - All rights reserved.
 
+## 3.19.1 (2026-05-26)
+
+### Bugfixes
+
+- Fix `cloud-wal-restore` failing to find compressed WAL files
+
+  Fixed a bug where `barman-cloud-wal-restore` and `barman cloud-wal-restore` commands
+  would fail to locate a compressed WAL file when a backup file with the same prefix
+  existed in the cloud storage bucket.
+
+  For example, when requesting WAL `00000001000000030000001A` and the bucket
+  contained both `00000001000000030000001A.gz` and
+  `00000001000000030000001A.00000028.backup.gz`, Barman would only locate the backup
+  file and then write an error log like:
+
+  ```
+  ERROR: WAL file 00000001000000030000001A for server pg does not exist
+  ```
+
+  The issue is now fixed and WAL files are correctly identified even when backup
+  files with the same prefix are present in the bucket.
+
+  References: BAR-1315.
+
 ## 3.19.0 (2026-05-20)
 
 ### Notable changes
